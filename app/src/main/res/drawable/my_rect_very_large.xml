@@ -1,0 +1,12 @@
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <size
+                android:height= "@dimen/activity_vertical_margin"
+                android:width="@dimen/activity_horizontal_margin" />
+            <solid android:color="@color/colorWhite"/>
+            <corners android:radius="10dip"/>
+        </shape>
+    </item>
+</selector>

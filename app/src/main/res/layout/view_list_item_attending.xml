@@ -1,0 +1,61 @@
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="80dp">
+    <!-- Bottom View Start-->
+    <LinearLayout
+        android:background="#ff00ddff"
+        android:id="@+id/bottom_wrapper_lswipe"
+        android:layout_width="160dp"
+        android:weightSum="1"
+        android:layout_height="match_parent">
+        <!--What you want to show-->
+        <Button
+            android:id="@+id/btn_make_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ff00ddff"
+            android:layout_marginTop="10dp"
+            android:drawableTop="@drawable/ic_make_admin"
+            android:text="Make admin"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="#FF0000"
+        android:id="@+id/bottom_wrapper_rswipe"
+        android:layout_width="160dp"
+        android:weightSum="1"
+        android:layout_height="match_parent">
+        <!--What you want to show-->
+        <Button
+            android:id="@+id/btn_make_refused"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#FF0000"
+            android:drawableTop="@drawable/ic_make_refused"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"
+            android:text="Remove"/>
+    </LinearLayout>
+    <!-- Bottom View End-->
+
+    <!-- Surface View Start -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:background="@drawable/my_rect_large">
+        <!--What you want to show in SurfaceView-->
+        <ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="2dp"
+            android:id="@+id/itemImageView"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:id="@+id/itemTextView"/>
+    </LinearLayout>
+    <!-- Surface View End -->
+</com.daimajia.swipe.SwipeLayout>
