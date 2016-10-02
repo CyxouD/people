@@ -1,9 +1,5 @@
 package com.example.dima.myapplication;
 
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.annotation.DrawableRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,24 +7,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.dima.myapplication.enteties.Person;
 import com.example.dima.myapplication.enteties.Role;
 import com.example.dima.myapplication.enteties.Status;
-import com.example.dima.myapplication.enteties.items.HeaderItem;
-import com.example.dima.myapplication.enteties.items.ListItem;
-import com.example.dima.myapplication.enteties.items.AttendingItem;
 import com.example.dima.myapplication.utils.TestData;
-import com.example.dima.myapplication.enteties.items.NoneHeaderItem;
-import com.example.dima.myapplication.enteties.items.NotAttendingItem;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import static com.example.dima.myapplication.EnterActivity.myRole;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
@@ -40,59 +27,73 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        configureToolbar();
+        configureRecyclingView();
+    }
+
+    private void configureToolbar() {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         myToolbar.setTitle("People");
         setSupportActionBar(myToolbar);
+    }
 
-        TextView textView = (TextView) findViewById(R.id.statusView);
-        textView.setText(myRole.toString());
-        ImageView imageView = (ImageView) findViewById(R.id.myPhotoImgView);
-        imageView.setBackgroundResource(R.mipmap.me);
-
+    private void configureRecyclingView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        TreeMap<Status, List<Person>> usersMap = TestData.createTestData();
+        final TreeMap<Status, List<Person>> usersMap = TestData.createTestData();
         // specify an adapter (see also next example)
-        mAdapter = new SmartAdapter(this, packageDataForAdapter(usersMap));
-        mRecyclerView.addItemDecoration(((SmartAdapter) mAdapter).verticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
+        mAdapter = new SmartAdapter(this, usersMap, new SmartAdapter.ModificationsListener() {
+            @Override
+            public void makeAdmin(Person p) {
+                delete(p);
+                p.setRole(Role.ADMIN);
+                add(Status.ATTENDING, p);
+                System.out.println(usersMap);
+            }
+
+            @Override
+            public void makeRefused(Person p) {
+                delete(p);
+                p.setRole(Role.REFUSED);
+                add(Status.NOT_ATTENDING, p);
+                System.out.println(usersMap);
+            }
+
+            @Override
+            public void makeMember(Person p) {
+                delete(p);
+                p.setRole(Role.MEMBER);
+                add(Status.ATTENDING, p);
+                System.out.println(usersMap);
+            }
+
+            @Override
+            public void delete(Person personToDelete) {
+                for (List<Person> personList : usersMap.values()) {
+                    for (Person p : personList) {
+                        if (p.equals(personToDelete)) {
+                            personList.remove(personToDelete);
+                            break; // to avoid java.util.ConcurrentModificationException
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void add(Status status, Person personToAdd) {
+                usersMap.get(status).add(personToAdd);
+            }
+
+
+        });
+        mRecyclerView.addItemDecoration(mAdapter.verticalSpaceItemDecoration(VERTICAL_ITEM_SPACE));
         mRecyclerView.setAdapter(mAdapter);
     }
-
-    public Drawable getDrawableFromId(@DrawableRes int id) {
-        Drawable drawable;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            drawable = getResources().getDrawable(id, getTheme());
-        } else {
-            drawable = getResources().getDrawable(id);
-        }
-
-        return drawable;
-    }
-
-    private List<ListItem> packageDataForAdapter(TreeMap<Status, List<Person>> usersMap) {
-        List<ListItem> adapterItems = new ArrayList<>();
-
-        for (Status status : usersMap.keySet()) {
-            HeaderItem headerItem = new HeaderItem(status);
-            adapterItems.add(headerItem);
-            for (Person person : usersMap.get(status)) {
-                NoneHeaderItem attendingItem;
-                if (status.equals(Status.ATTENDING)) {
-                    attendingItem = new AttendingItem(person);
-                } else {
-                    attendingItem = new NotAttendingItem(person);
-                }
-                adapterItems.add(attendingItem);
-            }
-        }
-
-        return adapterItems;
-    }
-
 
 
     @Override
@@ -106,9 +107,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_close:
-                Intent enterActivity = new Intent(MainActivity.this, EnterActivity.class);
-                myRole = Role.MEMBER;
-                startActivity(enterActivity);
+                finish();
                 return true;
             default:
                 // If we got here, the user's action was not recognized.

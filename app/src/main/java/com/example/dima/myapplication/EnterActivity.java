@@ -8,7 +8,7 @@ import android.view.View;
 import com.example.dima.myapplication.enteties.Role;
 
 public class EnterActivity extends AppCompatActivity {
-    public static Role myRole;
+    //public static Role myRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,14 +17,16 @@ public class EnterActivity extends AppCompatActivity {
     }
 
     public void logInAsAdmin(View v) {
-        Intent mainActivity = new Intent(EnterActivity.this, MainActivity.class);
-        myRole = Role.ADMIN;
+        Intent mainActivity = new Intent(this, MainActivity.class);
+        mainActivity.putExtra("userRole", Role.ADMIN.toString());
         startActivity(mainActivity);
     }
 
     public void logInAsUser(View v) {
-        Intent mainActivity = new Intent(EnterActivity.this, MainActivity.class);
-        myRole = Role.MEMBER;
+        Intent mainActivity = new Intent(this, MainActivity.class);
+        mainActivity.putExtra("userRole", Role.MEMBER.toString());
         startActivity(mainActivity);
     }
+
+
 }
